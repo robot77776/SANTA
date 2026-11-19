@@ -1,0 +1,8 @@
+ "use client";
+import {useEffect,useState} from "react";
+import Link from "next/link";
+export default function MyPage(){
+ const [data,setData]=useState<any>(null);const [error,setError]=useState("");
+ useEffect(()=>{const token=new URLSearchParams(location.search).get("key");if(!token){setError("В ссылке отсутствует личный ключ.");return;}fetch("/api/me?key="+encodeURIComponent(token)).then(async r=>{const d=await r.json();if(!r.ok)throw new Error(d.error);setData(d);}).catch(e=>setError(e.message));},[]);
+ return <main className="shell"><header className="top"><Link className="link" href="/">← На главную</Link><div className="brand">SECRET SANTA</div></header><section className="panel"><div className="ornament" style={{textAlign:"center"}}>🎁</div>{error?<><h2>Не удалось открыть результат</h2><div className="notice error">{error}</div></>:!data?<p className="muted">Загружаем твою страницу...</p>:<><h2 style={{textAlign:"center"}}>Привет, {data.name}!</h2>{data.drawn?<><p className="muted" style={{textAlign:"center"}}>Твой подарок предназначен для:</p><div className="secret">{data.recipient}</div><div className="notice">🤫 Это секрет! Не показывай эту страницу другим участникам.</div><h3>Пожелания получателя</h3><p className="muted"><b>Хочет:</b> {data.recipientWishes||"Пожеланий нет"}</p><p className="muted"><b>Не хочет:</b> {data.recipientAvoid||"Не указано"}</p><p className="muted"><b>Дополнительно:</b> {data.recipientNotes||"Нет дополнительных пожеланий"}</p></>:<div className="notice">Ты зарегистрирован(а)! Жеребьёвка ещё не проведена. Сохрани эту ссылку и загляни сюда позже.</div>}</>}</section></main>;
+}
