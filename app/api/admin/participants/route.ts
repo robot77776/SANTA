@@ -8,6 +8,9 @@ export async function GET(){
   supabaseAdmin.from("participants").select("id,name,wishes,avoid,notes,created_at").order("created_at"),
   supabaseAdmin.from("game_settings").select("registration_open,drawn").eq("id",1).single()
  ]);
- if(error)return NextResponse.json({error:"Не удалось загрузить участников."},{status:500});
- return NextResponse.json({participants,status});
+if(error) {
+  return NextResponse.json({
+    error: error.message,
+    code: error.code
+  }, {status:500});
 }
