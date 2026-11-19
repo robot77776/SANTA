@@ -11,6 +11,11 @@ export async function GET(req:Request){
  if(!settings?.drawn)return NextResponse.json({name:p.name,drawn:false});
  const {data:assignment}=await supabaseAdmin.from("assignments").select("recipient_id").eq("giver_id",p.id).maybeSingle();
  if(!assignment)return NextResponse.json({error:"Результат пока недоступен. Обратись к организатору."},{status:404});
- const {data:r}=await supabaseAdmin.from("participants").select("name,wishes,avoid,notes").eq("id",assignment.recipient_id).single();
+const {data:r}=await supabaseAdmin.from("participants").select("name,wishes,avoid,notes").eq("id",assignment.recipient_id).single();
+
+ if(!r){
+  return NextResponse.json({error:"Не удалось найти получателя."},{status:404});
+ }
+
  return NextResponse.json({name:p.name,drawn:true,recipient:r.name,recipientWishes:r.wishes,recipientAvoid:r.avoid,recipientNotes:r.notes});
 }
